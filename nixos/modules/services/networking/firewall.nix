@@ -120,10 +120,10 @@ let
       ip46tables -t raw -A nixos-fw-rpfilter -m rpfilter --validmark ${optionalString (cfg.checkReversePath == "loose") "--loose"} -j RETURN
 
       # Allows this host to act as a DHCP4 client without first having to use APIPA
-      iptables -t raw -A nixos-fw-rpfilter -p udp --sport 67 --dport 68 -j RETURN
+      iptables -w -t raw -A nixos-fw-rpfilter -p udp --sport 67 --dport 68 -j RETURN
 
       # Allows this host to act as a DHCPv4 server
-      iptables -t raw -A nixos-fw-rpfilter -s 0.0.0.0 -d 255.255.255.255 -p udp --sport 68 --dport 67 -j RETURN
+      iptables -w -t raw -A nixos-fw-rpfilter -s 0.0.0.0 -d 255.255.255.255 -p udp --sport 68 --dport 67 -j RETURN
 
       ${optionalString cfg.logReversePathDrops ''
         ip46tables -t raw -A nixos-fw-rpfilter -j LOG --log-level info --log-prefix "rpfilter drop: "
@@ -181,7 +181,7 @@ let
 
     # Accept IPv4 multicast.  Not a big security risk since
     # probably nobody is listening anyway.
-    #iptables -A nixos-fw -d 224.0.0.0/4 -j nixos-fw-accept
+    #iptables -w -A nixos-fw -d 224.0.0.0/4 -j nixos-fw-accept
 
     # Optionally respond to ICMPv4 pings.
     ${optionalString cfg.allowPing ''
@@ -194,12 +194,12 @@ let
       # Accept all ICMPv6 messages except redirects and node
       # information queries (type 139).  See RFC 4890, section
       # 4.4.
-      ip6tables -A nixos-fw -p icmpv6 --icmpv6-type redirect -j DROP
-      ip6tables -A nixos-fw -p icmpv6 --icmpv6-type 139 -j DROP
-      ip6tables -A nixos-fw -p icmpv6 -j nixos-fw-accept
+      ip6tables -w -A nixos-fw -p icmpv6 --icmpv6-type redirect -j DROP
+      ip6tables -w -A nixos-fw -p icmpv6 --icmpv6-type 139 -j DROP
+      ip6tables -w -A nixos-fw -p icmpv6 -j nixos-fw-accept
 
       # Allow this host to act as a DHCPv6 client
-      ip6tables -A nixos-fw -d fe80::/64 -p udp --dport 546 -j nixos-fw-accept
+      ip6tables -w -A nixos-fw -d fe80::/64 -p udp --dport 546 -j nixos-fw-accept
     ''}
 
     ${cfg.extraCommands}
