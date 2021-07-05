@@ -53,8 +53,8 @@ in
     virtualisation.containerd = {
       args.config = toString containerdConfigChecked;
       settings = {
-        plugins.cri.containerd.snapshotter = lib.mkIf config.boot.zfs.enabled "zfs";
-        plugins.cri.cni.bin_dir = lib.mkDefault "${pkgs.cni-plugins}/bin";
+        #plugins.cri.containerd.snapshotter = lib.mkIf config.boot.zfs.enabled "zfs";
+        #plugins.cri.cni.bin_dir = lib.mkDefault "${pkgs.cni-plugins}/bin";
       };
     };
 
