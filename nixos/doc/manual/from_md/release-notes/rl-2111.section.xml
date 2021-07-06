@@ -80,6 +80,14 @@
       </listitem>
       <listitem>
         <para>
+          <link xlink:href="https://software.intel.com/content/www/us/en/develop/topics/software-guard-extensions.html">sgx</link>,
+          support for Intel’s Software Guard Extensions (SGX) subsystem,
+          on supported platforms. Available as
+          <link xlink:href="options.html#opt-security.sgx.enable">security.sgx</link>.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
           <link xlink:href="https://www.vaultproject.io/docs/agent">vault-agent</link>,
           a client daemon that handles auto-auth, caching, and
           templating for Vault secrets. Available as
