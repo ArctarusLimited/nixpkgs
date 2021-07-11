@@ -31712,6 +31712,8 @@ in
 
   vault-bin = callPackage ../tools/security/vault/vault-bin.nix { };
 
+  vault-token-helper = callPackage ../tools/security/vault-token-helper { };
+
   vaultenv = haskellPackages.vaultenv;
 
   vazir-code-font = callPackage ../data/fonts/vazir-code-font { };
