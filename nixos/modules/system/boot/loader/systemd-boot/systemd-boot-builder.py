@@ -177,10 +177,16 @@ def write_secureboot_entry(profile: Optional[str], generation: int, machine_id: 
     efi_file_relative = sb_efi_file_name_relative(profile, generation)
     efi_file = "@efiSysMountPoint@/%s" % (efi_file_relative)
 
-    # TODO: Check if the path even exists?
-    try:
-        sbverify(efi_file)
-    except:
+    entry_exists = False
+
+    if os.path.exists(efi_file):
+        try:
+            sbverify(efi_file)
+            entry_exists = True
+        except:
+            pass
+
+    if not entry_exists:
         make_signed_efi(profile, generation, efi_file)
 
     generation_dir = os.readlink(system_dir(profile, generation))
@@ -201,13 +207,18 @@ def write_secureboot_entry(profile: Optional[str], generation: int, machine_id: 
 def sign_path(src: str, output: str) -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
         print(f"Signing {output}")
-        subprocess.check_call([
+        result = subprocess.run([
             "@sbsigntool@/bin/sbsign",
             "--key", "@signingKey@",
             "--cert", "@signingCertificate@",
             "--output", f"{tmpdir}/signed",
             src
-        ])
+        ], capture_output=True)
+
+        try:
+            result.check_returncode()
+        except subprocess.CalledProcessError:
+            print(result.stderr.decode())
 
         # Very likely to move across filesystems, so use
         # shutil.move over os.rename.
@@ -221,11 +232,16 @@ def sign_path(src: str, output: str) -> None:
 
 
 def sbverify(filename: str) -> None:
-    subprocess.check_call([
+    result = subprocess.run([
         "@sbsigntool@/bin/sbverify",
         "--cert", "@signingCertificate@",
         filename,
-    ])
+    ], capture_output=True)
+
+    try:
+        result.check_returncode()
+    except subprocess.CalledProcessError:
+        print(result.stderr.decode())
 
 
 def mkdir_p(path: str) -> None:
